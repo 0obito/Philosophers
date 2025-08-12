@@ -5,7 +5,7 @@ SRC_FILES = philo.c
 OBJ_FILES = $(SRC_FILES:.c=.o)
 
 
-$(NAME): $(SRC_FILES)
+$(NAME): $(OBJ_FILES)
 	$(CC) $(CFLAGS) $(OBJ_FILES) -o $(NAME)
 
 all: $(NAME)
