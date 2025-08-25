@@ -2,8 +2,9 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror
 NAME = philo
 SRC_FILES = philo.c philo_utils.c set_rules.c\
-			create_philos_and_forks.c\
-			philo_cycle.c free_stuff.c\
+			free_stuff.c philo_cycle.c\
+			create_philos_and_forks.c struct_utils.c\
+			routine_utils.c\
 
 OBJ_FILES = $(SRC_FILES:.c=.o)
 

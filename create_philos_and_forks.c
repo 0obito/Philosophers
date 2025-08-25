@@ -1,87 +1,61 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   create_philos_and_forks.c                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aelmsafe <aelmsafe@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/23 15:57:03 by aelmsafe          #+#    #+#             */
+/*   Updated: 2025/08/25 00:51:39 by aelmsafe         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
-pthread_mutex_t	*create_forks(int num_of_forks, pthread_mutex_t	**forks,
+pthread_mutex_t	*create_forks(pthread_mutex_t **forks_mutexes,
 								t_rules *rules)
 {
 	int	i;
+	int	num_of_forks;
+	int	*forks;
 
-	*forks = malloc(sizeof(pthread_mutex_t) * num_of_forks);
-	if (!(*forks))
-		return (perror("Error"), NULL);
+	num_of_forks = rules->num_of_philos;
+	*forks_mutexes = malloc(sizeof(pthread_mutex_t) * num_of_forks);
+	forks = malloc(sizeof(int) * num_of_forks);
+	if (!(*forks_mutexes) || !forks)
+		return (free(*forks_mutexes), free(forks), NULL);
 	i = 0;
 	while (i < num_of_forks)
 	{
-		if (pthread_mutex_init(&((*forks)[i]), NULL))
-		{
-			perror("Error");
-			free(rules);
-			free(*forks);
-			*forks = NULL;
-			return (NULL);
-		}
+		if (pthread_mutex_init(&((*forks_mutexes)[i]), NULL))
+			return (free(forks), free_forks_mutexes(forks_mutexes, i), NULL);
 		i++;
 	}
-	return (*forks);
+	memset(forks, 0xFF, sizeof(int) * num_of_forks);
+	rules->forks = forks;
+	return (*forks_mutexes);
 }
 
-int	set_philo_values(int i, t_philo *ptr,
-		t_rules *rules, pthread_mutex_t *forks)
+t_philo	*create_philos(int num_of_philos, t_philo **philos_head,
+						t_rules *rules, pthread_mutex_t **forks_mutexes)
 {
-	int	num_of_forks;
+	t_philo			*ptr;
+	int				n;
 
-	if (!ptr)
-		return (perror("Error"), 1);
-	num_of_forks = rules->num_of_philos;
-	ptr->num = i;
-	ptr->rules = rules;
-	ptr->left_f = &(forks[i % num_of_forks]);
-	ptr->right_f = &(forks[(i + 1) % num_of_forks]);
-	ptr->next = NULL;
-	if (pthread_create(&(ptr->thread), NULL, philo_cycle, (void *)ptr))
-		return (perror("Error"), 1);
-	return (0);
-}
-
-int	fill_philo(int i, t_philo **ph, t_rules *rules, pthread_mutex_t *forks)
-{
-	t_philo	*ptr;
-	int		j;
-
-	ptr = *ph;
-	j = 0;
-	while (j < i)
+	n = num_of_philos;
+	while (n > 0)
 	{
-		ptr = ptr->next;
-		j++;
+		if (append_philo(philos_head, rules, *forks_mutexes) == NULL)
+			return (free_philos(philos_head), NULL);
+		n--;
 	}
-	if (set_philo_values(i, ptr, rules, forks) == 1)
-		return (1);
-	return (0);
-}
-
-t_philo	*create_philos(int num_of_philos, t_philo **ph,
-						t_rules *rules, pthread_mutex_t *forks)
-{
-	t_philo	*ptr;
-	int		i;
-
-	*ph = malloc(sizeof(t_philo));
-	ptr = *ph;
-	i = -1;
-	while (++i < num_of_philos)
-	{
-		if (fill_philo(i, ph, rules, forks) == 1)
-			return (free_in_philos_creation(rules, forks, ph), NULL);
-		ptr->next = malloc(sizeof(t_philo));
-		ptr = ptr->next;
-	}
-	i = -1;
-	ptr = *ph;
-	while (++i < num_of_philos)
+	threads_supervisor(philos_head);
+	ptr = *philos_head;
+	while (ptr)
 	{
 		if (pthread_join(ptr->thread, NULL))
-			return (free_in_philos_creation(rules, forks, ph), NULL);
+			return (free_philos(philos_head), NULL);
 		ptr = ptr->next;
 	}
-	return (*ph);
+	return (*philos_head);
 }
