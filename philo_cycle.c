@@ -6,7 +6,7 @@
 /*   By: aelmsafe <aelmsafe@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:55:33 by aelmsafe          #+#    #+#             */
-/*   Updated: 2025/08/25 00:49:09 by aelmsafe         ###   ########.fr       */
+/*   Updated: 2025/08/25 11:52:03 by aelmsafe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,21 @@
 void	one_philo_case(t_philo *philo)
 {
 	go_sleep(philo, philo->rules->time_to_die);
-	philo_print("has died", philo);
+	philo_print("died", philo);
 	pthread_mutex_unlock(philo->left_f);
 	return ;
+}
+
+int	check_death(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->rules->death_lock);
+	if (philo->rules->death_flag == 1)
+	{
+		pthread_mutex_unlock(&philo->rules->death_lock);
+		return (1);
+	}
+	pthread_mutex_unlock(&philo->rules->death_lock);
+	return (0);
 }
 
 int	lock_forks(t_philo *philo, int num_of_philos)
@@ -26,24 +38,7 @@ int	lock_forks(t_philo *philo, int num_of_philos)
 	philo_print("has taken a fork", philo);
 	if (philo->left_f == philo->right_f)
 		return (one_philo_case(philo), 1);
-	pthread_mutex_lock(&philo->rules->death_lock);
-	if (philo->rules->death_flag == 1)
-	{
-		pthread_mutex_unlock(philo->left_f);
-		pthread_mutex_unlock(&philo->rules->death_lock);
-		return (1);
-	}
-	pthread_mutex_unlock(&philo->rules->death_lock);
 	pthread_mutex_lock(philo->right_f);
-	pthread_mutex_lock(&philo->rules->death_lock);
-	if (philo->rules->death_flag == 1)
-	{
-		pthread_mutex_unlock(philo->left_f);
-		pthread_mutex_unlock(philo->right_f);
-		pthread_mutex_unlock(&philo->rules->death_lock);
-		return (1);
-	}
-	pthread_mutex_unlock(&philo->rules->death_lock);
 	philo_print("has taken a fork", philo);
 	philo->rules->forks[(philo->num) % num_of_philos] *= -1;
 	philo->rules->forks[(philo->num + 1) % num_of_philos] *= -1;
@@ -67,24 +62,21 @@ void	*philo_cycle(void *ptr)
 		go_sleep(philo, 10);
 	while (1337)
 	{
-		pthread_mutex_lock(&philo->rules->death_lock);
-		if (philo->rules->death_flag == 1)
-		{
-			pthread_mutex_unlock(&philo->rules->death_lock);
+		if (check_death(philo))
 			return (NULL);
-		}
-		pthread_mutex_unlock(&philo->rules->death_lock);
 		if (lock_forks(philo, philo->rules->num_of_philos))
 			break ;
+		pthread_mutex_lock(&philo->meal_lock);
+		philo->last_time_ate = get_current_time(philo->rules);
+		pthread_mutex_unlock(&philo->meal_lock);
 		if (philo_print("is eating", philo))
 			break ;
-		if (go_sleep(philo, philo->rules->time_to_eat))
-			break ;
-		if (unlock_forks(philo))
-			break ;
+		go_sleep(philo, philo->rules->time_to_eat);
+		unlock_forks(philo);
 		if (philo_print("is sleeping", philo))
 			break ;
-		if (go_sleep(philo, philo->rules->time_to_sleep))
+		go_sleep(philo, philo->rules->time_to_sleep);
+		if (philo_print("is thinking", philo))
 			break ;
 	}
 	return (NULL);

@@ -6,7 +6,7 @@
 /*   By: aelmsafe <aelmsafe@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:55:42 by aelmsafe          #+#    #+#             */
-/*   Updated: 2025/08/25 01:05:37 by aelmsafe         ###   ########.fr       */
+/*   Updated: 2025/08/25 11:48:28 by aelmsafe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,5 +84,6 @@ int				go_sleep(t_philo *philo, long long sleep_time);
 int				philo_print(char *operation, t_philo *philo);
 // void			set_time_start(t_philo *philo, t_rules *rules);
 int				threads_supervisor(t_philo **philos_head);
+int				check_death(t_philo *philo);
 
 #endif /*PHILO_H*/

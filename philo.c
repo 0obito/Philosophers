@@ -6,7 +6,7 @@
 /*   By: aelmsafe <aelmsafe@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:56:44 by aelmsafe          #+#    #+#             */
-/*   Updated: 2025/08/25 01:29:46 by aelmsafe         ###   ########.fr       */
+/*   Updated: 2025/08/25 11:40:13 by aelmsafe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,21 +19,27 @@ int	threads_supervisor(t_philo **philos_head)
 
 	if ((*philos_head) == NULL)
 		return (1);
+	// one_philo_case(*philos_head);
+	if ((*philos_head)->rules->num_of_philos == 1)
+		return (0);
 	while (1337)
 	{
 		ptr = *philos_head;
 		full_philos = 0;
 		while (ptr != NULL)
 		{
+			pthread_mutex_lock(&ptr->meal_lock);
 			if (get_current_time(ptr->rules) - ptr->last_time_ate
 				>= (long long)ptr->rules->time_to_die)
 			{
-				philo_print("is dead", ptr);
+				pthread_mutex_unlock(&ptr->meal_lock);
+				philo_print("died", ptr);
 				pthread_mutex_lock(&ptr->rules->death_lock);
 				ptr->rules->death_flag = 1;
 				pthread_mutex_unlock(&ptr->rules->death_lock);
 				return (0);
 			}
+			pthread_mutex_unlock(&ptr->meal_lock);
 			pthread_mutex_lock(&ptr->meal_lock);
 			if (ptr->meals == ptr->rules->num_of_eat_time)
 				full_philos += 1;
