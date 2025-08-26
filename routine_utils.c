@@ -26,32 +26,23 @@ long long	get_current_time(t_rules *rules)
 int	go_sleep(t_philo *philo, long long sleep_time)
 {
 	long long	now;
-	long long	later;
 
 	now = get_current_time(philo->rules);
-	later = get_current_time(philo->rules);
-	while (later - now < sleep_time)
+	while (get_current_time(philo->rules) - now < sleep_time)
 	{
-		// pthread_mutex_lock(&philo->rules->death_lock);
-		// if (philo->rules->death_flag == 1)
-		// {
-		// 	pthread_mutex_unlock(&philo->rules->death_lock);
-		// 	return (1);
-		// }
-		// pthread_mutex_unlock(&philo->rules->death_lock);
-		usleep(25);
-		later = get_current_time(philo->rules);
+		if (check_death(philo))
+			return (1);
+		usleep(50);
 	}
 	return (0);
 }
 
-int	philo_print(char *operation, t_philo *philo)
+int	philo_print(char *operation, t_philo *philo, int flag)
 {
-	if (check_death(philo))
-		return (1);
 	pthread_mutex_lock(&philo->rules->print_lock);
-	printf("%lld %d ", get_current_time(philo->rules), philo->num);
-	printf("%s\n", operation);
+	if (flag == 1 || !check_death(philo))
+		printf("%lld %d %s\n"
+			, get_current_time(philo->rules), philo->num, operation);
 	pthread_mutex_unlock(&philo->rules->print_lock);
 	return (0);
 }

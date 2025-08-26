@@ -40,16 +40,24 @@ t_philo	*create_philos(int num_of_philos, t_philo **philos_head,
 						t_rules *rules, pthread_mutex_t **forks_mutexes)
 {
 	t_philo			*ptr;
+	pthread_t		monitor;
 	int				n;
 
 	n = num_of_philos;
-	while (n > 0)
-	{
+	while (--n > -1)
 		if (append_philo(philos_head, rules, *forks_mutexes) == NULL)
 			return (free_philos(philos_head), NULL);
-		n--;
+	ptr = *philos_head;
+	rules->start_time = get_current_time(rules);
+	while (ptr != NULL)
+	{
+		ptr->last_time_ate = rules->start_time;
+		if (pthread_create(&ptr->thread, NULL, philo_cycle, (void *)ptr))
+			return (NULL);
+		ptr = ptr->next;
 	}
-	threads_supervisor(philos_head);
+	if (pthread_create(&monitor, NULL, threads_supervisor, (void *)(*philos_head)))
+		return (NULL);
 	ptr = *philos_head;
 	while (ptr)
 	{
@@ -57,5 +65,7 @@ t_philo	*create_philos(int num_of_philos, t_philo **philos_head,
 			return (free_philos(philos_head), NULL);
 		ptr = ptr->next;
 	}
+	if (pthread_join(monitor, NULL))
+		return (free_philos(philos_head), NULL);
 	return (*philos_head);
 }

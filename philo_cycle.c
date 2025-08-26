@@ -14,8 +14,10 @@
 
 void	one_philo_case(t_philo *philo)
 {
+	pthread_mutex_lock(philo->left_f);
+	philo_print("has taken a fork", philo, 0);
 	go_sleep(philo, philo->rules->time_to_die);
-	philo_print("died", philo);
+	philo_print("died", philo, 0);
 	pthread_mutex_unlock(philo->left_f);
 	return ;
 }
@@ -32,25 +34,42 @@ int	check_death(t_philo *philo)
 	return (0);
 }
 
-int	lock_forks(t_philo *philo, int num_of_philos)
+void	eat(t_philo *philo)
 {
+	int	num_of_philos;
+
+	// if (check_death(philo))
+	// 	return ;
+	num_of_philos = philo->rules->num_of_philos;
 	pthread_mutex_lock(philo->left_f);
-	philo_print("has taken a fork", philo);
-	if (philo->left_f == philo->right_f)
-		return (one_philo_case(philo), 1);
-	pthread_mutex_lock(philo->right_f);
-	philo_print("has taken a fork", philo);
 	philo->rules->forks[(philo->num) % num_of_philos] *= -1;
+	philo_print("has taken a fork", philo, 0);
+	pthread_mutex_lock(philo->right_f);
 	philo->rules->forks[(philo->num + 1) % num_of_philos] *= -1;
-	return (0);
+	philo_print("has taken a fork", philo, 0);
+	philo_print("is eating", philo, 0);
+	pthread_mutex_lock(&philo->meal_lock);
+	philo->last_time_ate = get_current_time(philo->rules);
+	pthread_mutex_unlock(&philo->meal_lock);
+	go_sleep(philo, philo->rules->time_to_eat);
+	pthread_mutex_lock(&philo->meal_lock);
+	philo->meals += 1;
+	pthread_mutex_unlock(&philo->meal_lock);
+	pthread_mutex_unlock(philo->left_f);
+	pthread_mutex_unlock(philo->right_f);
+	if (check_death(philo))
+		return ;
 }
 
-int	unlock_forks(t_philo *philo)
+void	sleepp(t_philo *philo)
 {
-	pthread_mutex_unlock(philo->left_f);
-	if (philo->left_f != philo->right_f)
-		pthread_mutex_unlock(philo->right_f);
-	return (0);
+	philo_print("is sleeping", philo, 0);
+	go_sleep(philo, philo->rules->time_to_sleep);
+}
+
+void	think(t_philo *philo)
+{
+	philo_print("is thinking", philo, 0);
 }
 
 void	*philo_cycle(void *ptr)
@@ -58,26 +77,15 @@ void	*philo_cycle(void *ptr)
 	t_philo	*philo;
 
 	philo = (t_philo *)ptr;
+	if (philo->rules->num_of_philos == 1)
+		return (one_philo_case(philo), NULL);
 	if (philo->num % 2 == 0)
-		go_sleep(philo, 10);
-	while (1337)
+		usleep(300);
+	while (!check_death(philo))
 	{
-		if (check_death(philo))
-			return (NULL);
-		if (lock_forks(philo, philo->rules->num_of_philos))
-			break ;
-		pthread_mutex_lock(&philo->meal_lock);
-		philo->last_time_ate = get_current_time(philo->rules);
-		pthread_mutex_unlock(&philo->meal_lock);
-		if (philo_print("is eating", philo))
-			break ;
-		go_sleep(philo, philo->rules->time_to_eat);
-		unlock_forks(philo);
-		if (philo_print("is sleeping", philo))
-			break ;
-		go_sleep(philo, philo->rules->time_to_sleep);
-		if (philo_print("is thinking", philo))
-			break ;
+		eat(philo);
+		sleepp(philo);
+		think(philo);
 	}
 	return (NULL);
 }

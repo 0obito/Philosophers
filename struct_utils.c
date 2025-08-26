@@ -22,7 +22,8 @@ t_philo	*create_philo(int num, t_rules *rules, pthread_mutex_t *forks_mutexes)
 		return (NULL);
 	num_of_forks_mutexes = rules->num_of_philos;
 	ptr->num = num;
-	ptr->last_time_ate = get_current_time(rules);
+	ptr->last_time_ate = 0;
+	// ptr->last_time_ate = get_current_time(rules);
 	ptr->meals = 0;
 	ptr->next = NULL;
 	ptr->rules = rules;
@@ -30,8 +31,8 @@ t_philo	*create_philo(int num, t_rules *rules, pthread_mutex_t *forks_mutexes)
 		return (NULL);
 	ptr->left_f = &(forks_mutexes[num % num_of_forks_mutexes]);
 	ptr->right_f = &(forks_mutexes[(num + 1) % num_of_forks_mutexes]);
-	if (pthread_create(&ptr->thread, NULL, philo_cycle, (void *)ptr))
-		return (NULL);
+	// if (pthread_create(&ptr->thread, NULL, philo_cycle, (void *)ptr))
+	// 	return (NULL);
 	return (ptr);
 }
 

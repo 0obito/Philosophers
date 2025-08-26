@@ -60,6 +60,6 @@ t_rules	*create_rules(int ac, char *av[], t_rules **rules)
 		return (NULL);
 	if (check_rules(ac, rules) == NULL)
 		return (NULL);
-	(*rules)->start_time = get_current_time(*rules);
+	(*rules)->start_time = 0;
 	return (*rules);
 }

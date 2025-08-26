@@ -81,9 +81,9 @@ pthread_mutex_t	*create_forks(pthread_mutex_t **forks_mutexes, t_rules *rules);
 
 long long		get_current_time(t_rules *rules);
 int				go_sleep(t_philo *philo, long long sleep_time);
-int				philo_print(char *operation, t_philo *philo);
+int				philo_print(char *operation, t_philo *philo, int flag);
 // void			set_time_start(t_philo *philo, t_rules *rules);
-int				threads_supervisor(t_philo **philos_head);
+void			*threads_supervisor(void *ptr);
 int				check_death(t_philo *philo);
 
 #endif /*PHILO_H*/
