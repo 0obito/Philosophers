@@ -57,6 +57,12 @@ static int	check_string_and_init_vars(char *s, int *i, int *sign, long *ret)
 		return (1);
 	*sign = 1;
 	*ret = 0;
+	if (s[*i] == '-' || s[*i] == '+')
+	{
+		if (s[*i] == '-')
+			*sign = -1;
+		*i += 1;
+	}
 	return (0);
 }
 
@@ -68,12 +74,8 @@ int	ft_atoi(char *s)
 
 	if (check_string_and_init_vars(s, &i, &sign, &ret))
 		return (-1);
-	if (s[i] == '-' || s[i] == '+')
-	{
-		if (s[i] == '-')
-			sign = -1;
-		i++;
-	}
+	if (!(s[i] >= '0' && s[i] <= '9'))
+		return (-1);
 	while (s[i] >= '0' && s[i] <= '9')
 	{
 		ret = (ret * 10) + (long)(s[i] - '0');

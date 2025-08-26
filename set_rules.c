@@ -12,24 +12,12 @@
 
 #include "philo.h"
 
-void	print_rules(t_rules *rules)
-{
-	if (rules)
-	{
-		printf("%d\n", rules->num_of_philos);
-		printf("%d\n", rules->time_to_die);
-		printf("%d\n", rules->time_to_eat);
-		printf("%d\n", rules->time_to_sleep);
-		printf("%d\n", rules->num_of_eat_time);
-	}
-}
-
 static t_rules	*check_rules(int ac, t_rules **rules)
 {
 	t_rules	*p;
 
 	p = *rules;
-	if (p->num_of_philos < 0 || p->time_to_die <= 0
+	if (p->num_of_philos < 0 || p->time_to_die < 0
 		|| p->time_to_eat < 0 || p->time_to_sleep < 0
 		|| (ac == 6 && p->num_of_eat_time < 0))
 	{
@@ -38,6 +26,9 @@ Passed Parameters Must Be >= 0 and Must Consist of Digits.\n\
 Parameters Must Also Stay Within The Limits of an Integer.\n", 2);
 		return (NULL);
 	}
+	if (p->num_of_philos == 0 || p->time_to_die == 0
+		|| (ac == 6 && p->num_of_eat_time == 0))
+		return (NULL);
 	return (*rules);
 }
 

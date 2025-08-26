@@ -29,6 +29,7 @@ int	supervise_starvation(t_philo *philo)
 		}
 		pthread_mutex_unlock(&philo->meal_lock);
 		philo = philo->next;
+		usleep(50);
 	}
 	return (0);
 }
