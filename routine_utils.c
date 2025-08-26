@@ -6,7 +6,7 @@
 /*   By: aelmsafe <aelmsafe@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 16:02:39 by aelmsafe          #+#    #+#             */
-/*   Updated: 2025/08/25 11:47:10 by aelmsafe         ###   ########.fr       */
+/*   Updated: 2025/08/26 21:07:14 by aelmsafe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,18 @@ int	philo_print(char *operation, t_philo *philo, int flag)
 {
 	pthread_mutex_lock(&philo->rules->print_lock);
 	if (flag == 1 || !check_death(philo))
-		printf("%lld %d %s\n"
-			, get_current_time(philo->rules), philo->num, operation);
+		printf("%lld %d %s\n",
+			get_current_time(philo->rules), philo->num, operation);
 	pthread_mutex_unlock(&philo->rules->print_lock);
 	return (0);
+}
+
+void	one_philo_case(t_philo *philo)
+{
+	pthread_mutex_lock(philo->left_f);
+	philo_print("has taken a fork", philo, 0);
+	go_sleep(philo, philo->rules->time_to_die);
+	philo_print("died", philo, 0);
+	pthread_mutex_unlock(philo->left_f);
+	return ;
 }

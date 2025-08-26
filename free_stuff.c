@@ -6,7 +6,7 @@
 /*   By: aelmsafe <aelmsafe@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:55:24 by aelmsafe          #+#    #+#             */
-/*   Updated: 2025/08/24 23:56:07 by aelmsafe         ###   ########.fr       */
+/*   Updated: 2025/08/26 21:06:44 by aelmsafe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,8 @@ void	free_in_philos_creation(t_rules *rules,
 	free(rules);
 }
 
-void	free_all(t_philo **philos_head,pthread_mutex_t **forks_mutexes,
-				t_rules **rules)
+void	free_all(t_philo **philos_head, pthread_mutex_t **forks_mutexes
+				, t_rules **rules)
 {
 	free_philos(philos_head);
 	free_forks_mutexes(forks_mutexes, (*rules)->num_of_philos);

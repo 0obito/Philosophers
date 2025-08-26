@@ -6,21 +6,11 @@
 /*   By: aelmsafe <aelmsafe@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:55:33 by aelmsafe          #+#    #+#             */
-/*   Updated: 2025/08/25 11:52:03 by aelmsafe         ###   ########.fr       */
+/*   Updated: 2025/08/26 21:07:32 by aelmsafe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	one_philo_case(t_philo *philo)
-{
-	pthread_mutex_lock(philo->left_f);
-	philo_print("has taken a fork", philo, 0);
-	go_sleep(philo, philo->rules->time_to_die);
-	philo_print("died", philo, 0);
-	pthread_mutex_unlock(philo->left_f);
-	return ;
-}
 
 int	check_death(t_philo *philo)
 {
@@ -38,8 +28,6 @@ void	eat(t_philo *philo)
 {
 	int	num_of_philos;
 
-	// if (check_death(philo))
-	// 	return ;
 	num_of_philos = philo->rules->num_of_philos;
 	pthread_mutex_lock(philo->left_f);
 	philo->rules->forks[(philo->num) % num_of_philos] *= -1;

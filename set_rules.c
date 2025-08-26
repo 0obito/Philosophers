@@ -6,7 +6,7 @@
 /*   By: aelmsafe <aelmsafe@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:55:39 by aelmsafe          #+#    #+#             */
-/*   Updated: 2025/08/25 00:12:50 by aelmsafe         ###   ########.fr       */
+/*   Updated: 2025/08/26 21:07:49 by aelmsafe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static t_rules	*check_rules(int ac, t_rules **rules)
 	t_rules	*p;
 
 	p = *rules;
-	if (p->num_of_philos < 0 || p->time_to_die < 0
+	if (p->num_of_philos < 0 || p->time_to_die <= 0
 		|| p->time_to_eat < 0 || p->time_to_sleep < 0
 		|| (ac == 6 && p->num_of_eat_time < 0))
 	{

@@ -6,7 +6,7 @@
 /*   By: aelmsafe <aelmsafe@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:57:03 by aelmsafe          #+#    #+#             */
-/*   Updated: 2025/08/25 00:51:39 by aelmsafe         ###   ########.fr       */
+/*   Updated: 2025/08/26 21:06:54 by aelmsafe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,17 @@ pthread_mutex_t	*create_forks(pthread_mutex_t **forks_mutexes,
 	return (*forks_mutexes);
 }
 
+int	join_threads(t_philo *philo)
+{
+	while (philo)
+	{
+		if (pthread_join(philo->thread, NULL))
+			return (1);
+		philo = philo->next;
+	}
+	return (0);
+}
+
 t_philo	*create_philos(int num_of_philos, t_philo **philos_head,
 						t_rules *rules, pthread_mutex_t **forks_mutexes)
 {
@@ -56,16 +67,10 @@ t_philo	*create_philos(int num_of_philos, t_philo **philos_head,
 			return (NULL);
 		ptr = ptr->next;
 	}
-	if (pthread_create(&monitor, NULL, threads_supervisor, (void *)(*philos_head)))
-		return (NULL);
-	ptr = *philos_head;
-	while (ptr)
-	{
-		if (pthread_join(ptr->thread, NULL))
-			return (free_philos(philos_head), NULL);
-		ptr = ptr->next;
-	}
-	if (pthread_join(monitor, NULL))
+	if (pthread_create(&monitor, NULL, threads_supervisor
+			, (void *)(*philos_head)))
+		return (free_philos(philos_head), NULL);
+	if (join_threads(*philos_head) || pthread_join(monitor, NULL))
 		return (free_philos(philos_head), NULL);
 	return (*philos_head);
 }

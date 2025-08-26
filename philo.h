@@ -6,7 +6,7 @@
 /*   By: aelmsafe <aelmsafe@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:55:42 by aelmsafe          #+#    #+#             */
-/*   Updated: 2025/08/25 11:48:28 by aelmsafe         ###   ########.fr       */
+/*   Updated: 2025/08/26 21:07:06 by aelmsafe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,21 +69,22 @@ void			free_forks_mutexes(pthread_mutex_t **forks_mutexes,
 void			free_in_philos_creation(t_rules *rules,
 					pthread_mutex_t **forks_mutexes, t_philo **ph);
 void			free_philos(t_philo **ph);
-void			free_all(t_philo **philos_head,pthread_mutex_t **forks_mutexes,
+void			free_all(t_philo **philos_head, pthread_mutex_t **forks_mutexes,
 					t_rules **rules);
 
-/* Main Program Functions */
-t_philo			*create_philos(int num_of_philos, t_philo **philos_head,
-					t_rules *rules, pthread_mutex_t **forks_mutexes);
-t_rules			*create_rules(int ac, char *av[], t_rules **rules);
-void			*philo_cycle(void *ptr);
-pthread_mutex_t	*create_forks(pthread_mutex_t **forks_mutexes, t_rules *rules);
-
+/* Routine useful functions */
 long long		get_current_time(t_rules *rules);
 int				go_sleep(t_philo *philo, long long sleep_time);
 int				philo_print(char *operation, t_philo *philo, int flag);
-// void			set_time_start(t_philo *philo, t_rules *rules);
+void			one_philo_case(t_philo *philo);
 void			*threads_supervisor(void *ptr);
 int				check_death(t_philo *philo);
+
+/* Main Program Functions */
+t_rules			*create_rules(int ac, char *av[], t_rules **rules);
+pthread_mutex_t	*create_forks(pthread_mutex_t **forks_mutexes, t_rules *rules);
+t_philo			*create_philos(int num_of_philos, t_philo **philos_head,
+					t_rules *rules, pthread_mutex_t **forks_mutexes);
+void			*philo_cycle(void *ptr);
 
 #endif /*PHILO_H*/

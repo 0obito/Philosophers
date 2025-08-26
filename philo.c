@@ -6,7 +6,7 @@
 /*   By: aelmsafe <aelmsafe@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:56:44 by aelmsafe          #+#    #+#             */
-/*   Updated: 2025/08/25 11:40:13 by aelmsafe         ###   ########.fr       */
+/*   Updated: 2025/08/26 21:07:02 by aelmsafe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	supervise_starvation(t_philo *philo)
 int	supervise_eaten_meals(t_philo *philo)
 {
 	t_philo	*ptr;
-	int	full_philos;
+	int		full_philos;
 
 	ptr = philo;
 	full_philos = 0;
